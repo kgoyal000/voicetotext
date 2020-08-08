@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Translate Voice to Text</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">    
+    <style>
+        body{
+            overflow: hidden;
+        }
+        .vertical-center {
+            min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+            min-height: 100vh; /* These two lines are counted as one :-)       */
+          
+            display: flex;
+            align-items: center;
+          }
+          textarea{
+          width: 90%;
+          height: 250px;
+          resize: none;
+          font-size: 2em;
+          padding: 5px 10px;
+        }
+    </style>
+    </head>
+
+    <body>
+        <article class="jumbotron">
+        <section class="section-divider vertical-center ">
+            <div class="container text-center">
+                <div class="form-group">
+            <label for="convert-from" class="form-group display-4">Choose Language</label>
+            <select id="convert-from" class="form-control w-50 m-auto">
+                        <option>en (English)</option>
+                        <option>ar (العربية)</option>
+                        <option>de (Deutsch)</option>
+                        <option>fr (Français)</option>
+                        <option>hi (हिंदी)</option>
+                        <option>pt (Português)</option>
+                        <option>ru (Русский)</option>
+                        <option>es (Español)</option>
+                        <option>tr (Türk)</option>
+                        <option>nl (Nederlands)</option>
+                        <option>it (Italiano)</option>
+                        <option>pl (Polski)</option>
+                        <option>ro (Român)</option>
+                        <option>sv (Svensk)</option>
+                        <option>vi (Việt)</option>
+                        <option>th (ภาษาไทย)</option>
+                        <option>zh-CN (中文简体)</option>
+                        <option>zh-TW (中國傳統)</option>
+                        <option>ko (한국의)</option>
+                        <option>ja (日本人)</option>
+                        <option>el (ελληνικά)</option>
+                        <option>ts (தமிழ்)</option>
+                        <option>hy (հայերեն)</option>
+                        <option>bs (Bosanski)</option>
+                        <option>ca (Català)</option>
+                        <option>hr (Hrvatski)</option>
+                        <option>dq (Dansk)</option>
+                        <option>eo (Esperanto)</option>
+                        <option>fi (Suomalainen)</option>
+                        <option>ht (Haian kreyòl)</option>
+                        <option>hu (Magyar)</option>
+                        <option>is (Icelandic)</option>
+                        <option>id (Indonesia)</option>
+                        <option>la (Latinum)</option>
+                        <option>lv (Latvijas)</option>
+                        <option>mk (Македонски)</option>
+                        <option>no (Norsk)</option>
+                        <option>sr (Српски)</option>
+                        <option>sk (Slovenský)</option>
+                        <option>sw (Kiswahili)</option>
+                        <option>cy (Cymraeg)</option>
+                    </select>
+            </div>
+            <textarea class="form-control" rows="10" id="textarea-from"></textarea><br>
+            <div class="d-flex justify-content-around">
+                    <button id="btn-convert-text" type="button" class="btn btn-info d-none" >Convert Your Text Input</button>
+                    <button id="btn-convert-voice" type="button" class="btn btn-info">Speak & Convert Your Voice</button>
+            </div>
+       </div>
+        </section>
+
+        </article>
+
+    </body>
+
+    <script src="./Translator.js"></script>
+    
+    <script>
+        var translator = new Translator();
+
+        function getOption(language) {
+            var option = document.createElement('option');
+            option.value = language.language;
+            if(language.name) {
+                option.innerHTML = language.name + ' (' + language.language + ')'
+            }
+            else {
+                option.innerHTML = language.language;
+            }
+
+            if(language.language == 'en') {
+                option.selected = true;
+            }
+
+            return option;
+        }
+
+        var convertFrom = document.getElementById('convert-from');
+        
+        var textareaFrom = document.getElementById('textarea-from');
+        
+        function getLanguages() {
+            var from = document.getElementById('convert-from').value.split(' (')[0];            
+            return {
+                from: from,
+            };
+        }
+        
+        document.getElementById('btn-convert-voice').onclick = function() {
+            this.disabled = true;
+            this.style.display = 'none';
+            this.innerHTML = 'Start Speaking!';
+
+            var languages = getLanguages();
+            
+            translator.voiceToText(function(text) {
+                textareaFrom.value = text;
+                
+                document.getElementById('btn-convert-text').onclick(true);
+            }, languages.from);
+        };
+        
+        document.getElementById('btn-convert-text').onclick = function(speakAsWell) {
+            var languages = getLanguages();
+        };
+        
+        document.getElementById('convert-from').onchange = function() {
+            localStorage.setItem('convert-from', this.value);
+        };
+        
+        
+        textareaFrom.onchange = function() {
+            localStorage.setItem('textarea-from', this.value);
+        };
+        
+        function localStorageGetItem() {
+            if(localStorage.getItem('convert-from')) {
+                document.getElementById('convert-from').value = localStorage.getItem('convert-from');
+            }
+            
+
+            if(localStorage.getItem('textarea-from')) {
+                textareaFrom.value = localStorage.getItem('textarea-from');
+            }
+            
+        }
+
+        localStorageGetItem();
+    </script>
+
+</html>
